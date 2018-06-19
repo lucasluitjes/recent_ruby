@@ -3,37 +3,61 @@
 require 'optparse'
 require 'methadone'
 require 'recent_ruby.rb'
+require 'pp'
+require 'net/http'
+require 'json'
 
 class App
   include Methadone::Main
   include Methadone::CLILogging
 
-  main do # Add args you want: |like,so|
-    # your program code here
-    # You can access CLI options via
-    # the options Hash
+  def self.http_get(url)
+    uri = URI(url)
+    Net::HTTP.start(uri.host, uri.port,
+      :use_ssl => uri.scheme == 'https') do |http|
+      request = Net::HTTP::Get.new uri
+      response = http.request request
+      response.body
+    end
   end
 
-  # supplemental methods here
+  main do |version|
+    arg :version, :optional
 
-  # Declare command-line interface here
+    version_base_url = ENV['VERSION_BASE_URL'] || "https://raw.githubusercontent.com/rbenv/ruby-build/master/share/ruby-build/"
+    versions_url = ENV['VERSIONS_URL'] || "https://api.github.com/repos/rbenv/ruby-build/contents/share/ruby-build"
 
-  # description "one line description of your app"
-  #
-  # Accept flags via:
-  # on("--flag VAL","Some flag")
-  # options[flag] will contain VAL
-  #
-  # Specify switches via:
-  # on("--[no-]switch","Some switch")
-  #
-  # Or, just call OptionParser methods on opts
-  #
-  # Require an argument
-  # arg :some_arg 
-  #
-  # # Make an argument optional
-  # arg :optional_arg, :optional
+    minor = version.split(".")[0,2]
+    puts "Downloading latest list of Rubies from Github..."
+
+    rubies = JSON.parse(http_get(versions_url))
+    puts "Comparing version numbers..."
+    minor_rubies = rubies.map {|n| n["name"]}.select{|n|
+      n =~ /^\d+\.\d+\.\d+(-p\d+)?$/ &&
+      n.split(".")[0,2] == minor
+    }
+
+    latest = minor_rubies.sort_by {|ruby|
+      a,b,c,d = *ruby.sub("-p", ".").split(".").map(&:to_i)
+      [a,b,c,d || -1]
+    }.last
+
+    if version != latest
+      puts "Current version is #{version}, but the latest patch release for #{minor.join(".")} is #{latest}!"
+      exit 1
+    end
+
+    puts "Downloading details for #{version}..."
+    details = http_get("#{version_base_url}#{version}")
+    puts "Checking EOL status..."
+
+    if details =~ / warn_eol /
+      puts "EOL warning found for #{version}!"
+      exit 1
+    end
+
+    puts "Ruby version check completed successfully."
+  end
 
   version RecentRuby::VERSION
 

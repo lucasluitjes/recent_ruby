@@ -18,6 +18,7 @@ GEM
     builder (3.2.3)
     childprocess (0.9.0)
       ffi (~> 1.0, >= 1.0.11)
+    coderay (1.1.2)
     contracts (0.16.0)
     cucumber (3.1.1)
       builder (>= 2.1.2)
@@ -40,9 +41,13 @@ GEM
     gherkin (5.1.0)
     methadone (1.9.5)
       bundler
+    method_source (0.9.0)
     multi_json (1.13.1)
     multi_test (0.1.2)
     power_assert (1.1.2)
+    pry (0.11.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
     rake (10.5.0)
     rdoc (6.0.4)
     rspec-expectations (3.7.0)
@@ -59,6 +64,7 @@ PLATFORMS
 DEPENDENCIES
   aruba
   bundler (~> 1.16)
+  pry
   rake (~> 10.0)
   rdoc
   recent_ruby!
