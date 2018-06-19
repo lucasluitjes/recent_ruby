@@ -15,7 +15,7 @@ Feature: My bootstrapped app kinda works
     """
 
   Scenario: Up-to-date Ruby (At the time these fixtures were created)
-    When I run `recent_ruby 2.3.7`
+    When I run `recent_ruby --version-string 2.3.7`
     And the stderr should not contain anything
     Then the exit status should be 0
     And the output should contain:
@@ -28,7 +28,7 @@ Feature: My bootstrapped app kinda works
     """
 
   Scenario: Outdated minor version
-    When I run `recent_ruby 2.3.1`
+    When I run `recent_ruby --version-string 2.3.1`
     Then the exit status should be 1
     And the stderr should not contain anything
     And the output should contain:
@@ -39,7 +39,7 @@ Feature: My bootstrapped app kinda works
     """
 
   Scenario: End of Life minor version
-    When I run `recent_ruby 1.8.7-p375`
+    When I run `recent_ruby --version-string 1.8.7-p375`
     And the stderr should not contain anything
     Then the exit status should be 1
     And the output should contain:
@@ -49,4 +49,65 @@ Feature: My bootstrapped app kinda works
     Downloading details for 1.8.7-p375...
     Checking EOL status...
     EOL warning found for 1.8.7-p375!
+    """
+
+  Scenario: No arguments
+    When I run `recent_ruby`
+    Then the exit status should be 1
+    And the stderr should not contain anything
+    And the output should contain:
+    """
+    Please supply either a gemfile path or a version string. Run with -h for more information.
+    """
+
+  Scenario: Too many arguments
+    When I run `recent_ruby --version-string 1.8.7-p375 --gemfile Gemfile`
+    Then the exit status should be 1
+    And the stderr should not contain anything
+    And the output should contain:
+    """
+    Please supply only one argument. Run with -h for more information.
+    """
+
+  Scenario: Check version from gemfile
+    Given a file named "Gemfile" with:
+    """
+    source "https://rubygems.org"
+
+    ruby "2.3.3"
+
+    gem "rbnacl-libsodium"
+    """
+    When I run `recent_ruby --gemfile Gemfile`
+    Then the exit status should be 1
+    And the stderr should not contain anything
+    And the output should contain:
+    """
+    Downloading latest list of Rubies from Github...
+    Comparing version numbers...
+    Current version is 2.3.3, but the latest patch release for 2.3 is 2.3.7!
+    """
+
+  Scenario: Try to check missing version from gemfile
+    Given a file named "Gemfile" with:
+    """
+    source "https://rubygems.org"
+
+    gem "rbnacl-libsodium"
+    """
+    When I run `recent_ruby --gemfile Gemfile`
+    Then the exit status should be 1
+    And the stderr should not contain anything
+    And the output should contain:
+    """
+    Unable to find ruby version in gemfile.
+    """
+
+  Scenario: Only MRI is supported
+    When I run `recent_ruby --version-string jruby-1.5.6`
+    Then the exit status should be 1
+    And the stderr should not contain anything
+    And the output should contain:
+    """
+    Only stable release MRI version strings are currently supported. (e.g. 2.3.1 or 2.3.1-p12)
     """

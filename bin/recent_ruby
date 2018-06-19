@@ -6,6 +6,7 @@ require 'recent_ruby.rb'
 require 'pp'
 require 'net/http'
 require 'json'
+require 'parser/current'
 
 class App
   include Methadone::Main
@@ -21,11 +22,35 @@ class App
     end
   end
 
-  main do |version|
-    arg :version, :optional
+  main do
+    gemfile = options['gemfile']
+    version = options['version-string']
 
     version_base_url = ENV['VERSION_BASE_URL'] || "https://raw.githubusercontent.com/rbenv/ruby-build/master/share/ruby-build/"
     versions_url = ENV['VERSIONS_URL'] || "https://api.github.com/repos/rbenv/ruby-build/contents/share/ruby-build"
+
+    if (gemfile && version) 
+      puts "Please supply only one argument. Run with -h for more information."
+      exit(1)
+    elsif (!gemfile && !version)
+      puts "Please supply either a gemfile path or a version string. Run with -h for more information."
+      exit(1)
+    end
+
+    if gemfile
+      ast = Parser::CurrentRuby.parse(File.read(gemfile))
+      xml = RecentRuby::XMLAST.new(ast)
+      version = xml.xpath("//send[symbol-val[@value='ruby']]/str/string-val/@value")&.first&.value
+      if !version
+        puts "Unable to find ruby version in gemfile."
+        exit(1)
+      end
+    end
+
+    if version !~ /^(\d+\.\d+\.\d+(-p\d+)?)$/
+      puts "Only stable release MRI version strings are currently supported. (e.g. 2.3.1 or 2.3.1-p12)"
+      exit(1)
+    end
 
     minor = version.split(".")[0,2]
     puts "Downloading latest list of Rubies from Github..."
@@ -58,6 +83,9 @@ class App
 
     puts "Ruby version check completed successfully."
   end
+
+  on("--gemfile PATH", "Path of Gemfile")
+  on("--version-string STRING", "Ruby version string (e.g. 2.3.1)")
 
   version RecentRuby::VERSION
 

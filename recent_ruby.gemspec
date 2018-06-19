@@ -37,5 +37,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('pry')
   spec.add_development_dependency('aruba')
   spec.add_dependency('methadone', '~> 1.9.5')
+  spec.add_dependency('parser')
   spec.add_development_dependency('test-unit')
 end
