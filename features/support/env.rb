@@ -3,7 +3,7 @@ require 'methadone/cucumber'
 require 'webrick'
 
 ENV['PATH'] = "#{File.expand_path(File.dirname(__FILE__) + '/../../bin')}#{File::PATH_SEPARATOR}#{ENV['PATH']}"
-LIB_DIR = File.join(File.expand_path(File.dirname(__FILE__)),'..','..','lib')
+LIB_DIR = File.join(__dir__, '..', '..', 'lib')
 
 Before do
   # Using "announce" causes massive warnings on 1.9.2
@@ -17,12 +17,12 @@ After do
 end
 
 AfterConfiguration do
-	RubyMock.start
+  RubyMock.start
 end
 
 After do
   ENV['RUBYLIB'] = @original_rubylib
-	RubyMock.clear
+  RubyMock.clear
 end
 
 Aruba.configure do |config|
@@ -43,17 +43,17 @@ class RubyMock
     @resources = {}
   end
 
-  def self.enable_rate_limiting()
+  def self.enable_rate_limiting
     @rate_limiting = true
   end
 
   def self.start
-    server = WEBrick::HTTPServer.new(Port: 8000, AccessLog: [], Logger: WEBrick::Log::new("/dev/null", 7))
+    server = WEBrick::HTTPServer.new(Port: 8000, AccessLog: [], Logger: WEBrick::Log.new('/dev/null', 7))
     server.mount_proc '/' do |req, res|
       @requests << req.body
       if @rate_limiting
         res.status = 429
-        res.body = "Please try again in a few moments."
+        res.body = 'Please try again in a few moments.'
       else
         res.body = @resources[req.path]
       end

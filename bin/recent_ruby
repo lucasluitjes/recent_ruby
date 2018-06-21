@@ -16,29 +16,29 @@ class App
     gemfile = options['gemfile']
     version = options['version-string']
 
-    version_base_url = ENV['VERSION_BASE_URL'] || "https://raw.githubusercontent.com/rbenv/ruby-build/master/share/ruby-build/"
-    versions_url = ENV['VERSIONS_URL'] || "https://api.github.com/repos/rbenv/ruby-build/contents/share/ruby-build"
+    version_base_url = ENV['VERSION_BASE_URL'] || 'https://raw.githubusercontent.com/rbenv/ruby-build/master/share/ruby-build/'
+    versions_url = ENV['VERSIONS_URL'] || 'https://api.github.com/repos/rbenv/ruby-build/contents/share/ruby-build'
 
     validate_args(gemfile, version)
     version = parse_gemfile(gemfile) if gemfile
     validate_mri_version(version)
-    minor = version.split(".")[0,2]
-    
+    minor = version.split('.')[0, 2]
+
     rubies = get_rubies(versions_url)
     latest = latest_minor_version(rubies, minor)
     compare_versions(version, latest, minor)
 
     check_eol(version, version_base_url)
 
-    puts "Ruby version check completed successfully."
+    puts 'Ruby version check completed successfully.'
   end
 
-  on("--gemfile PATH", "Path of Gemfile")
-  on("--version-string STRING", "Ruby version string (e.g. 2.3.1)")
+  on('--gemfile PATH', 'Path of Gemfile')
+  on('--version-string STRING', 'Ruby version string (e.g. 2.3.1)')
 
   version RecentRuby::VERSION
 
-  use_log_level_option :toggle_debug_on_signal => 'USR1'
+  use_log_level_option toggle_debug_on_signal: 'USR1'
 
   go!
 end
