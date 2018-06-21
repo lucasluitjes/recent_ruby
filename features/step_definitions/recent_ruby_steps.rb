@@ -9,3 +9,7 @@ end
 Given("the endpoint {string} returns {string}") do |string, string2|
 	RubyMock.resources[string] = File.read("features/fixtures/#{string2}")
 end
+
+When("Github is rate limiting us") do
+  RubyMock.enable_rate_limiting
+end

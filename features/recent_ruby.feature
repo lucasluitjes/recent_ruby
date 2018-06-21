@@ -79,7 +79,6 @@ Feature: My bootstrapped app kinda works
     gem "rbnacl-libsodium"
     """
     When I run `recent_ruby --gemfile Gemfile`
-    Then the exit status should be 1
     And the stderr should not contain anything
     And the output should contain:
     """
@@ -87,6 +86,7 @@ Feature: My bootstrapped app kinda works
     Comparing version numbers...
     Current version is 2.3.3, but the latest patch release for 2.3 is 2.3.7!
     """
+    Then the exit status should be 1
 
   Scenario: Try to check missing version from gemfile
     Given a file named "Gemfile" with:
@@ -110,4 +110,17 @@ Feature: My bootstrapped app kinda works
     And the output should contain:
     """
     Only stable release MRI version strings are currently supported. (e.g. 2.3.1 or 2.3.1-p12)
+    """
+
+  Scenario: What if Github is rate limiting us?
+    Given Github is rate limiting us
+    When I run `recent_ruby --version-string 2.3.1`
+    And the stderr should not contain anything
+    Then the exit status should be 2
+    And the output should contain:
+    """
+    Downloading latest list of Rubies from Github...
+    Error: received HTTP 429 response from Github:
+
+    Please try again in a few moments.
     """

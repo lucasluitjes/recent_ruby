@@ -2,8 +2,7 @@
 
 require 'optparse'
 require 'methadone'
-require 'recent_ruby.rb'
-require 'pp'
+require 'recent_ruby'
 require 'net/http'
 require 'json'
 require 'parser/current'
@@ -11,16 +10,7 @@ require 'parser/current'
 class App
   include Methadone::Main
   include Methadone::CLILogging
-
-  def self.http_get(url)
-    uri = URI(url)
-    Net::HTTP.start(uri.host, uri.port,
-      :use_ssl => uri.scheme == 'https') do |http|
-      request = Net::HTTP::Get.new uri
-      response = http.request request
-      response.body
-    end
-  end
+  extend RecentRuby
 
   main do
     gemfile = options['gemfile']
@@ -29,57 +19,16 @@ class App
     version_base_url = ENV['VERSION_BASE_URL'] || "https://raw.githubusercontent.com/rbenv/ruby-build/master/share/ruby-build/"
     versions_url = ENV['VERSIONS_URL'] || "https://api.github.com/repos/rbenv/ruby-build/contents/share/ruby-build"
 
-    if (gemfile && version) 
-      puts "Please supply only one argument. Run with -h for more information."
-      exit(1)
-    elsif (!gemfile && !version)
-      puts "Please supply either a gemfile path or a version string. Run with -h for more information."
-      exit(1)
-    end
-
-    if gemfile
-      ast = Parser::CurrentRuby.parse(File.read(gemfile))
-      xml = RecentRuby::XMLAST.new(ast)
-      version = xml.xpath("//send[symbol-val[@value='ruby']]/str/string-val/@value")&.first&.value
-      if !version
-        puts "Unable to find ruby version in gemfile."
-        exit(1)
-      end
-    end
-
-    if version !~ /^(\d+\.\d+\.\d+(-p\d+)?)$/
-      puts "Only stable release MRI version strings are currently supported. (e.g. 2.3.1 or 2.3.1-p12)"
-      exit(1)
-    end
-
+    validate_args(gemfile, version)
+    version = parse_gemfile(gemfile) if gemfile
+    validate_mri_version(version)
     minor = version.split(".")[0,2]
-    puts "Downloading latest list of Rubies from Github..."
+    
+    rubies = get_rubies(versions_url)
+    latest = latest_minor_version(rubies, minor)
+    compare_versions(version, latest, minor)
 
-    rubies = JSON.parse(http_get(versions_url))
-    puts "Comparing version numbers..."
-    minor_rubies = rubies.map {|n| n["name"]}.select{|n|
-      n =~ /^\d+\.\d+\.\d+(-p\d+)?$/ &&
-      n.split(".")[0,2] == minor
-    }
-
-    latest = minor_rubies.sort_by {|ruby|
-      a,b,c,d = *ruby.sub("-p", ".").split(".").map(&:to_i)
-      [a,b,c,d || -1]
-    }.last
-
-    if version != latest
-      puts "Current version is #{version}, but the latest patch release for #{minor.join(".")} is #{latest}!"
-      exit 1
-    end
-
-    puts "Downloading details for #{version}..."
-    details = http_get("#{version_base_url}#{version}")
-    puts "Checking EOL status..."
-
-    if details =~ / warn_eol /
-      puts "EOL warning found for #{version}!"
-      exit 1
-    end
+    check_eol(version, version_base_url)
 
     puts "Ruby version check completed successfully."
   end

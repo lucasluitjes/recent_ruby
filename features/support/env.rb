@@ -32,19 +32,31 @@ end
 class RubyMock
   class << self; attr_accessor :resources end
   class << self; attr_accessor :requests end
+  class << self; attr_accessor :rate_limiting end
   @resources = {}
   @requests = []
+  @rate_limiting = false
 
   def self.clear
     @requests = []
+    @rate_limiting = false
     @resources = {}
+  end
+
+  def self.enable_rate_limiting()
+    @rate_limiting = true
   end
 
   def self.start
     server = WEBrick::HTTPServer.new(Port: 8000, AccessLog: [], Logger: WEBrick::Log::new("/dev/null", 7))
     server.mount_proc '/' do |req, res|
       @requests << req.body
-      res.body = @resources[req.path]
+      if @rate_limiting
+        res.status = 429
+        res.body = "Please try again in a few moments."
+      else
+        res.body = @resources[req.path]
+      end
     end
     Thread.new do
       server.start
