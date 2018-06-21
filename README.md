@@ -1,12 +1,12 @@
 # Recent Ruby
 
-This script takes a Ruby version number, compares it to all available Ruby versions, and throws an error unless the supplied version number contains the latest security patches.
+This script takes a Ruby version number, compares it to all available Ruby versions, and throws an error unless the supplied version number contains the latest security patches. Put it in your build pipeline and you'll never deploy an app to an unpatched Ruby again.
 
 ## Why
 
-Heroku (and other platforms) use the Gemfile to determine which version of Ruby to use. This means, whenever a Ruby vulnerability is found, you need to personally update your Gemfile in order to be safe. This also means you need to pay close attention to the Ruby security notices. On smaller teams, this is often overlooked.
+Heroku (and other platforms) use the Gemfile to determine which version of Ruby to use. This means, whenever a Ruby vulnerability is found, you need to update your Gemfile in order to be safe. More importantly it means you need to pay close attention to the Ruby security notices. On smaller teams, this is often overlooked.
 
-For Ruby gems, you can use Brakeman or Hakiri or Github itself to stay up-to-date with security patches. For your Ruby version, you can now use Recent Ruby.
+For gems, you can use Brakeman or Hakiri or Github itself to stay up-to-date with security patches. For your Ruby version, you can now use Recent Ruby.
 
 ## Installation
 
@@ -37,6 +37,7 @@ $ recent_ruby --version-string 2.3.1
 Downloading latest list of Rubies from Github...
 Comparing version numbers...
 Current version is 2.3.1, but the latest patch release for 2.3 is 2.3.7!
+```
 
 $ recent_ruby --version-string 2.3.7
 Downloading latest list of Rubies from Github...
@@ -44,6 +45,7 @@ Comparing version numbers...
 Downloading details for 2.3.7...
 Checking EOL status...
 Ruby version check completed successfully.
+```
 
 $ recent_ruby --version-string 2.0.0-p648
 Downloading latest list of Rubies from Github...
@@ -67,6 +69,16 @@ $ recent_ruby --gemfile path/to/Gemfile
 Downloading latest list of Rubies from Github...
 Comparing version numbers...
 Current version is 2.3.3, but the latest patch release for 2.3 is 2.3.7!
+```
+
+Build steps I use on in the project settings on SemaphoreCI:
+
+```
+# Setup:
+gem install recent_ruby --no-rdoc --no-ri
+
+# Build:
+recent_ruby --gemfile Gemfile
 ```
 
 ## How
