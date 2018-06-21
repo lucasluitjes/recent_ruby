@@ -80,3 +80,12 @@ Since the ruby-build repository is well maintained and used in production by man
 ## Contributing
 
 Feel free to create issues for any problems you may have. Patches are welcome, especially if they come with a Cucumber scenario.
+
+## Contributors
+
+- Lucas Luitjes
+- Cedric Hartskeerl
+
+## License
+
+This project is MIT licensed.
