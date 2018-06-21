@@ -24,7 +24,9 @@ gem 'recent_ruby', require: false
 
 ## Usage
 
-Just add Recent Ruby in your CI/CD build process, wherever you would put Rubocop or Brakeman. Recent Ruby can check either your Gemfile, or whatever is supplied as a command line argument, and checks if that version of Ruby is the most recent TEENY/PATCH release for that minor version. It also makes sure that your minor version is not End-of-Life yet. If your version of Ruby does happen to be out of date and potentially insecure, it exits with status code 1. This means you can simply drop it into your .circle.yml or your Semaphore build step, or wherever you usually put these things. 
+Just add Recent Ruby in your CI/CD build process, wherever you would put Rubocop or Brakeman. Recent Ruby can check either your Gemfile, or whatever is supplied as a command line argument, and checks if that version of Ruby is the most recent TEENY/PATCH release for that minor version.
+
+It also makes sure that your minor version is not End-of-Life yet. If your version of Ruby does happen to be out of date and potentially insecure, it exits with status code 1. This means you can simply drop it into your .circle.yml or your Semaphore build step, or wherever you usually put these things. 
 
 ## Examples
 
