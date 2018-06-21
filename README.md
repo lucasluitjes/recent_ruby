@@ -1,3 +1,5 @@
+TODO: when using gemfile, grab patchlevel from config hash, if present, as documented here:  https://bundler.io/v1.5/gemfile_ruby.html
+
 # Recent Ruby
 
 This script takes a Ruby version number, compares it to all available Ruby versions, and throws an error unless the supplied version number contains the latest security patches. Put it in your build pipeline and you'll never deploy an app to an unpatched Ruby again.
