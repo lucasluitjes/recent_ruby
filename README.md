@@ -30,7 +30,7 @@ It also makes sure that your minor version is not End-of-Life yet. If your versi
 
 ## Examples
 
-Version number supplied on command line (2.3.7 was the latest 2.3 release at the time of this writing):
+Outdated version number supplied on command line (2.3.7 was the latest 2.3 release at the time of this writing):
 
 ```
 $ recent_ruby --version-string 2.3.1
@@ -39,6 +39,8 @@ Comparing version numbers...
 Current version is 2.3.1, but the latest patch release for 2.3 is 2.3.7!
 ```
 
+Latest release for 2.3:
+```
 $ recent_ruby --version-string 2.3.7
 Downloading latest list of Rubies from Github...
 Comparing version numbers...
@@ -47,6 +49,8 @@ Checking EOL status...
 Ruby version check completed successfully.
 ```
 
+Latest release for 2.0, which is End-of-Life (no longer getting security patches):
+```
 $ recent_ruby --version-string 2.0.0-p648
 Downloading latest list of Rubies from Github...
 Comparing version numbers...
