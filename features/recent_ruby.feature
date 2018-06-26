@@ -88,6 +88,27 @@ Feature: My bootstrapped app kinda works
     """
     Then the exit status should be 1
 
+  Scenario: Check version from gemfile
+    Given a file named "Gemfile" with:
+    """
+    source "https://rubygems.org"
+
+    ruby "1.8.7", :patchlevel => 375
+
+    gem "rbnacl-libsodium"
+    """
+    When I run `recent_ruby --gemfile Gemfile`
+    And the stderr should not contain anything
+    And the output should contain:
+    """
+    Downloading latest list of Rubies from Github...
+    Comparing version numbers...
+    Downloading details for 1.8.7-p375...
+    Checking EOL status...
+    EOL warning found for 1.8.7-p375!
+    """
+    Then the exit status should be 1
+
   Scenario: Try to check missing version from gemfile
     Given a file named "Gemfile" with:
     """

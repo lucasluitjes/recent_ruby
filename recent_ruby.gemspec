@@ -5,7 +5,7 @@ require "recent_ruby/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "recent_ruby"
-  spec.license       = ""
+  spec.license       = "MIT"
   spec.version       = RecentRuby::VERSION
   spec.authors       = ["Lucas Luitjes"]
   spec.email         = ["lucas@luitjes.it"]

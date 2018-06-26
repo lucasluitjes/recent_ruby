@@ -1,7 +1,14 @@
+# frozen_string_literal: true
+
 require 'recent_ruby/version'
 require 'recent_ruby/xml_ast'
 
 module RecentRuby
+  RUBY_NODE_XPATH = "//send[symbol-val[@value='ruby']]"
+  VERSION_XPATH = "#{RUBY_NODE_XPATH}/str/string-val/@value"
+  PATCHLEVEL_XPATH = "#{RUBY_NODE_XPATH}/hash/pair[sym[symbol-val[@value='patchlevel']]]"
+  PATCHLEVEL_VALUE_XPATH = "#{PATCHLEVEL_XPATH}/int/integer-val/@value"
+
   def http_get(url)
     uri = URI(url)
     Net::HTTP.start(uri.host, uri.port,
@@ -29,19 +36,21 @@ module RecentRuby
   def parse_gemfile(gemfile)
     ast = Parser::CurrentRuby.parse(File.read(gemfile))
     xml = RecentRuby::XMLAST.new(ast)
-    version = xml.xpath("//send[symbol-val[@value='ruby']]/str/string-val/@value") || [nil]
-    version = version.first ? version.first.value : nil
+    version = xml.xpath(VERSION_XPATH)&.first&.value
     unless version
       puts 'Unable to find ruby version in gemfile.'
       exit(1)
     end
+
+    patchlevel = xml.xpath(PATCHLEVEL_VALUE_XPATH)&.first&.value
+    version += "-p#{patchlevel}" if patchlevel
     version
   end
 
   def validate_mri_version(version)
     return if version =~ /^(\d+\.\d+\.\d+(-p\d+)?)$/
-	  puts 'Only stable release MRI version strings are currently supported. (e.g. 2.3.1 or 2.3.1-p12)'
-	  exit(1)
+    puts 'Only stable release MRI version strings are currently supported. (e.g. 2.3.1 or 2.3.1-p12)'
+    exit(1)
   end
 
   def get_rubies(versions_url)
