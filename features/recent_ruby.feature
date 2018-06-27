@@ -16,8 +16,8 @@ Feature: My bootstrapped app kinda works
 
   Scenario: Up-to-date Ruby (At the time these fixtures were created)
     When I run `recent_ruby --version-string 2.3.7`
-    And the stderr should not contain anything
     Then the exit status should be 0
+    And the stderr should not contain anything
     And the output should contain:
     """
     Downloading latest list of Rubies from Github...
@@ -136,8 +136,8 @@ Feature: My bootstrapped app kinda works
   Scenario: What if Github is rate limiting us?
     Given Github is rate limiting us
     When I run `recent_ruby --version-string 2.3.1`
-    And the stderr should not contain anything
     Then the exit status should be 2
+    And the stderr should not contain anything
     And the output should contain:
     """
     Downloading latest list of Rubies from Github...
