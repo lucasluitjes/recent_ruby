@@ -6,7 +6,7 @@ This script takes a Ruby version number, compares it to all available Ruby versi
 
 Heroku (and other platforms) use the Gemfile to determine which version of Ruby to use. This means, whenever a Ruby vulnerability is found, you need to update your Gemfile in order to be safe. More importantly it means you need to pay close attention to the Ruby security notices. On smaller teams, this is often overlooked.
 
-For gems, you can use Brakeman or Hakiri or Github itself to stay up-to-date with security patches. For your Ruby version, you can now use Recent Ruby.
+For gems, you can use Brakeman or Hakiri to stay up-to-date with security patches. For your Ruby version, use recent_ruby.
 
 ## Installation
 
