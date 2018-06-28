@@ -75,7 +75,7 @@ Comparing version numbers...
 Current version is 2.3.3, but the latest patch release for 2.3 is 2.3.7!
 ```
 
-Build steps I use on in the project settings on SemaphoreCI:
+Build steps I use in the project settings on SemaphoreCI:
 
 ```
 # Setup:
@@ -87,11 +87,11 @@ recent_ruby --gemfile Gemfile
 
 ## How
 
-If `--gemfile` was supplied, we use the parser gem to extract the Ruby version from the Gemfile.
+If `--gemfile` was supplied, we use the parser gem to extract the Ruby version and patchlevel from the Gemfile.
 
 First, we check that we’re being supplied an MRI stable release. If not, we immediately stop and error with exit code 1. Next, we grab the list of releases from the ruby-build repository and do some comparison to make sure we’re on the latest TEENY/PATCH release. Then we download the build specification from the ruby-build repository, and make sure an End-of-Life warning is not present.
 
-Since the ruby-build repository is well maintained and used in production by many, it’s a reliable source.
+Since the ruby-build repository is well maintained and used in production by many, it’s a reliable source for this purpose.
 
 ## Contributing
 
