@@ -97,6 +97,14 @@ Since the ruby-build repository is well maintained and used in production by man
 
 Feel free to create issues for any problems you may have. Patches are welcome, especially if they come with a Cucumber scenario.
 
+### New release
+
+* Bump version in `lib/recent_ruby/version.rb`, in this example to 0.1.5
+* `git commit lib/recent_ruby/version.rb -m "v0.1.5"`
+* `git tag -a v0.1.5 -m "Version 0.1.5"`
+* `gem build recent_ruby`
+* `gem push recent_ruby-0.1.5.gem`
+
 ## Contributors
 
 - Lucas Luitjes
