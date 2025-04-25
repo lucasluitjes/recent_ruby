@@ -6,6 +6,10 @@ require 'recent_ruby/xml_ast'
 module RecentRuby
   RUBY_NODE_XPATH = "//send[symbol-val[@value='ruby']]"
   VERSION_XPATH = "#{RUBY_NODE_XPATH}/str/string-val/@value"
+
+  FILE_XPATH = "#{RUBY_NODE_XPATH}/hash/pair[sym[symbol-val[@value='file']]]"
+  FILE_VALUE_XPATH = "#{FILE_XPATH}/str/string-val/@value"
+
   PATCHLEVEL_XPATH = "#{RUBY_NODE_XPATH}/hash/pair[sym[symbol-val[@value='patchlevel']]]"
   PATCHLEVEL_VALUE_XPATH = "#{PATCHLEVEL_XPATH}/int/integer-val/@value"
 
@@ -36,7 +40,11 @@ module RecentRuby
   def parse_gemfile(gemfile)
     ast = parser_for_current_ruby.parse(File.read(gemfile))
     xml = RecentRuby::XMLAST.new(ast)
+
+    file = xml.xpath(FILE_VALUE_XPATH)&.first&.value
     version = xml.xpath(VERSION_XPATH)&.first&.value
+    version = File.read(file).strip if !version && file
+
     unless version
       puts 'Unable to find ruby version in gemfile.'
       exit(1)

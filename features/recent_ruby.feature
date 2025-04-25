@@ -109,6 +109,31 @@ Feature: My bootstrapped app kinda works
     """
     Then the exit status should be 1
 
+  Scenario: Check version from gemfile that refers to external file
+    Given a file named "Gemfile" with:
+    """
+    source "https://rubygems.org"
+
+    ruby file: ".ruby-version"
+
+    gem "rbnacl-libsodium"
+    """
+    And a file named ".ruby-version" with:
+    """
+    2.3.7
+    """
+    When I run `recent_ruby --gemfile Gemfile`
+    And the output should contain:
+    """
+    Downloading latest list of Rubies from Github...
+    Comparing version numbers...
+    Downloading details for 2.3.7...
+    Checking EOL status...
+    Ruby version check completed successfully.
+    """
+    And the stderr should not contain anything
+    Then the exit status should be 0
+
   Scenario: Try to check missing version from gemfile
     Given a file named "Gemfile" with:
     """
