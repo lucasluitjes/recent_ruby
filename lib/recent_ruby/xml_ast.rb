@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-require 'parser/current'
 require 'rexml/document'
 
 module RecentRuby
-  # Class comes from: https://medium.com/rubyinside/using-xpath-to-rewrite-ruby-code-with-ease-8f635af65b5b
+  # Class comes from: https://blog.luitjes.it/posts/using-xpath-to-rewrite-ruby-code-with-ease/
   # TODO: turn into a separate gem
 
   class XMLAST

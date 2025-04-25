@@ -34,7 +34,7 @@ module RecentRuby
   end
 
   def parse_gemfile(gemfile)
-    ast = Parser::CurrentRuby.parse(File.read(gemfile))
+    ast = parser_for_current_ruby.parse(File.read(gemfile))
     xml = RecentRuby::XMLAST.new(ast)
     version = xml.xpath(VERSION_XPATH)&.first&.value
     unless version
@@ -85,5 +85,26 @@ module RecentRuby
     return if version == latest
     puts "Current version is #{version}, but the latest patch release for #{minor.join('.')} is #{latest}!"
     exit 1
+  end
+
+  # https://github.com/whitequark/parser/blob/master/doc/PRISM_TRANSLATION.md
+  def parser_for_current_ruby
+    code_version = RUBY_VERSION.to_f
+
+    if code_version <= 3.3
+      require 'parser/current'
+      Parser::CurrentRuby
+    else
+      require 'prism'
+      case code_version
+      when 3.3
+        Prism::Translation::Parser33
+      when 3.4
+        Prism::Translation::Parser34
+      else
+        warn "Unknown Ruby version #{code_version}, using 3.4 as a fallback"
+        Prism::Translation::Parser34
+      end
+    end
   end
 end
