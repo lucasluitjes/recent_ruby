@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    recent_ruby (0.1.5)
+    recent_ruby (0.1.6)
       methadone (~> 1.9.5)
       parser
       rexml
@@ -95,7 +95,7 @@ GEM
       ffi (~> 1.1)
     test-unit (3.4.1)
       power_assert
-    thor (1.1.0)
+    thor (1.4.0)
     thread_safe (0.3.6)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
